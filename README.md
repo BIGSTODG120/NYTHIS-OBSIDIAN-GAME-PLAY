@@ -56,6 +56,6 @@ MIT. Free to fork, study, ship. No tracking, no upsell, no premium tier.
 
 ## Built by
 
-[BIGSTODG120](https://github.com/BIGSTODG120) — Director of TOA Legacy Consulting, founder of NYTHIS.
+[BIGSTODG120](https://github.com/BIGSTODG120) — Director of TOA Legacy Consulting, founder of NYTHIS OBSIDIAN LOCAL AI, INC.
 
 Six arcade classics seeded a $300 billion industry. Most builders today couldn't ship one of them clean. This repo shipped seven.
