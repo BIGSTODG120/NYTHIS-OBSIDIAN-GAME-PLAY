@@ -1,0 +1,13 @@
+﻿/* COSMIC LAYER LIFT - ensures all scene content stacks above CosmicCanvas */
+.hub,
+.pong,
+.snake,
+.break,
+.sweep,
+.drift,
+.stack,
+.spire {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}

@@ -1,0 +1,360 @@
+
+=== src\render\Stage.tsx ===
+import { Canvas } from '@react-three/fiber'
+import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
+import type { ReactNode } from 'react'
+
+export default function Stage({ children }: { children: ReactNode }) {
+  return (
+    <Canvas
+      camera={{ position: [0, 1.2, 5.5], fov: 45 }}
+      dpr={[1, 2]}
+      gl={{ antialias: true, powerPreference: 'high-performance' }}
+    >
+      <color attach="background" args={['#0a0a0a']} />
+      <fog attach="fog" args={['#0a0a0a', 7, 16]} />
+      <ambientLight intensity={0.15} />
+      <directionalLight position={[5, 8, 4]} intensity={0.6} color="#e8eef5" />
+      <pointLight position={[-4, 2, 3]} intensity={2.4} color="#7a4cd6" distance={12} />
+      <pointLight position={[4, -1.5, 3]} intensity={1.5} color="#c8932a" distance={10} />
+      <pointLight position={[0, 4, 2]} intensity={0.8} color="#e8eef5" distance={8} />
+      {children}
+      <EffectComposer>
+        <Bloom intensity={0.85} luminanceThreshold={0.15} luminanceSmoothing={0.85} mipmapBlur />
+        <Vignette eskil={false} offset={0.15} darkness={0.75} />
+      </EffectComposer>
+    </Canvas>
+  )
+}
+
+=== src\scenes\pong\index.tsx ===
+import { useEffect, useRef, useState } from "react"
+import { Canvas, useFrame } from "@react-three/fiber"
+import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing"
+import { useAppStore } from "../../core/store"
+import { createState, serve, tick, WIN_SCORE } from "./PongGame"
+import type { PongState } from "./PongGame"
+import { aiTick } from "./PongAI"
+import { installInput, p1Input, p2InputHuman, spaceJustPressed, escJustPressed } from "./PongInput"
+import PongScene from "./PongScene"
+import PongHUD from "./PongHUD"
+
+const HIGHSCORE_KEY = "nogp:v2:pong:highscore"
+
+function readHighScore(): number {
+  try {
+    const v = localStorage.getItem(HIGHSCORE_KEY)
+    return v ? parseInt(v, 10) || 0 : 0
+  } catch { return 0 }
+}
+
+function writeHighScore(v: number): void {
+  try { localStorage.setItem(HIGHSCORE_KEY, String(v)) } catch { /* ignore */ }
+}
+
+interface LoopProps {
+  state: PongState
+  onChange: () => void
+  onWin: (winnerScore: number) => void
+}
+
+function GameLoop({ state, onChange, onWin }: LoopProps) {
+  const { pongMode, pongAITier, setActiveScene } = useAppStore()
+  const lastStatus = useRef(state.status)
+
+  useFrame((_, dt) => {
+    // Input
+    p1Input(state, dt)
+    if (pongMode === "2p") {
+      p2InputHuman(state, dt)
+    } else {
+      aiTick(state, pongAITier, dt)
+    }
+
+    // Serve trigger
+    if (state.status === "menu" && spaceJustPressed()) {
+      state.p1.score = 0
+      state.p2.score = 0
+      serve(state)
+    } else if (state.status === "gameover" && spaceJustPressed()) {
+      state.p1.score = 0
+      state.p2.score = 0
+      state.winner = 0
+      serve(state)
+    }
+
+    // ESC to hub
+    if (escJustPressed()) {
+      setActiveScene("hub")
+      return
+    }
+
+    // Physics
+    tick(state, dt)
+
+    // Win detection (status just transitioned to gameover)
+    if (state.status === "gameover" && lastStatus.current !== "gameover") {
+      const winnerScore = state.winner === 1 ? state.p1.score : state.p2.score
+      onWin(winnerScore)
+    }
+    lastStatus.current = state.status
+
+    onChange()
+  })
+
+  return null
+}
+
+export default function PongRoot() {
+  const [stateRef] = useState<{ current: PongState }>(() => ({ current: createState() }))
+  const [, force] = useState(0)
+  const [highScore, setHighScore] = useState(() => readHighScore())
+  const setActiveScene = useAppStore((s) => s.setActiveScene)
+
+  useEffect(() => {
+    const uninstall = installInput()
+    return uninstall
+  }, [])
+
+  const handleStart = () => {
+    stateRef.current.p1.score = 0
+    stateRef.current.p2.score = 0
+    stateRef.current.winner = 0
+    serve(stateRef.current)
+    force((n) => n + 1)
+  }
+
+  const handleBack = () => setActiveScene("hub")
+
+  const handleWin = (winnerScore: number) => {
+    if (winnerScore > highScore) {
+      writeHighScore(winnerScore)
+      setHighScore(winnerScore)
+    }
+  }
+
+  return (
+    <div className="pong">
+      <div className="pong__canvas-wrap">
+        <Canvas
+          camera={{ position: [0, 0, 9.5], fov: 45 }}
+          dpr={[1, 2]}
+          gl={{ antialias: true, powerPreference: "high-performance" }}
+        >
+          <color attach="background" args={["#0a0a0a"]} />
+          <ambientLight intensity={0.25} />
+          <directionalLight position={[5, 6, 6]} intensity={0.7} color="#e8eef5" />
+          <pointLight position={[-4, 0, 4]} intensity={1.8} color="#7a4cd6" distance={14} />
+          <pointLight position={[4, 0, 4]} intensity={1.3} color="#c8932a" distance={12} />
+          <GameLoop state={stateRef.current} onChange={() => force((n) => n + 1)} onWin={handleWin} />
+          <PongScene state={stateRef.current} />
+          <EffectComposer>
+            <Bloom intensity={0.7} luminanceThreshold={0.2} luminanceSmoothing={0.85} mipmapBlur />
+            <Vignette eskil={false} offset={0.18} darkness={0.8} />
+          </EffectComposer>
+        </Canvas>
+      </div>
+      <PongHUD state={stateRef.current} highScore={highScore} onStart={handleStart} onBack={handleBack} />
+      <div className="pong__brand">OBSIDIAN PONG - FIRST TO {WIN_SCORE}</div>
+    </div>
+  )
+}
+
+=== src\scenes\snake\SnakeHUD.tsx ===
+import { useAppStore } from "../../core/store"
+import type { SnakeState } from "./SnakeGame"
+
+interface SnakeHUDProps {
+  state: SnakeState
+  highScore: number
+  onStart: () => void
+  onBack: () => void
+}
+
+function chainClass(m: number): string {
+  if (m >= 5) return "is-active is-mega"
+  if (m >= 3) return "is-active is-strong"
+  if (m >= 2) return "is-active"
+  return ""
+}
+
+export default function SnakeHUD({ state, highScore, onStart, onBack }: SnakeHUDProps) {
+  const { snakeWraparound, setSnakeWraparound } = useAppStore()
+
+  return (
+    <div className="snake-hud">
+      <button type="button" className="snake-hud__back" onClick={onBack}>
+        ? HUB
+      </button>
+
+      <div className="snake-hud__score">
+        <div className="snake-hud__score-block">
+          <div className="snake-hud__score-label">SCORE</div>
+          <div className="snake-hud__score-value">{state.score}</div>
+        </div>
+        <div className={`snake-hud__combo ${chainClass(state.multiplier)}`} key={`chain-${state.multiplier}`}>
+          <div className="snake-hud__score-label">CHAIN</div>
+          <div className="snake-hud__combo-value">x{state.multiplier}</div>
+        </div>
+        <div className="snake-hud__score-block">
+          <div className="snake-hud__score-label">HIGH</div>
+          <div className="snake-hud__score-value snake-hud__score-value--muted">{highScore}</div>
+        </div>
+      </div>
+
+      {state.status === "menu" && (
+        <div className="snake-hud__menu">
+          <div className="snake-hud__title">OBSIDIAN SNAKE</div>
+
+          <div className="snake-hud__group">
+            <div className="snake-hud__group-label">WALLS</div>
+            <div className="snake-hud__row">
+              <button
+                type="button"
+                className={`snake-hud__opt ${snakeWraparound ? "is-active" : ""}`}
+                onClick={() => setSnakeWraparound(true)}
+              >WRAPAROUND</button>
+              <button
+                type="button"
+                className={`snake-hud__opt ${!snakeWraparound ? "is-active" : ""}`}
+                onClick={() => setSnakeWraparound(false)}
+              >CLASSIC</button>
+            </div>
+          </div>
+
+          <div className="snake-hud__controls">
+            <div>MOVE: <b>W A S D</b>  or  <b>? ? ? ?</b></div>
+            <div>CHAIN: eat fruit within 3 seconds for combo</div>
+            <div className="snake-hud__hint">SPACE to start - ESC to hub</div>
+          </div>
+
+          <button type="button" className="snake-hud__start" onClick={onStart}>
+            START - PRESS SPACE
+          </button>
+        </div>
+      )}
+
+      {state.status === "gameover" && (
+        <div className="snake-hud__menu">
+          <div className="snake-hud__title">GAME OVER</div>
+          <div className="snake-hud__final">
+            <div className="snake-hud__final-row">SCORE <b>{state.score}</b></div>
+            <div className="snake-hud__final-row">FRUITS <b>{state.fruitsEaten}</b></div>
+            <div className="snake-hud__final-row snake-hud__final-row--chain">BEST CHAIN <b>x{state.maxChainThisRun}</b></div>
+            <div className="snake-hud__final-row">BEST <b>{Math.max(highScore, state.score)}</b></div>
+          </div>
+          <button type="button" className="snake-hud__start" onClick={onStart}>
+            REMATCH
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+=== src\core\games.ts ===
+export type GameStatus = "FORGING" | "LIVE"
+
+export interface GameUpgrade {
+  readonly label: string
+  readonly description: string
+}
+
+export interface GameCardData {
+  readonly id: string
+  readonly title: string
+  readonly origin: string
+  readonly originYear: number
+  readonly pass: string
+  readonly status: GameStatus
+  readonly upgrades: readonly [GameUpgrade, GameUpgrade]
+  readonly isOriginal?: boolean
+}
+
+export const games: readonly GameCardData[] = [
+  {
+    id: "pong",
+    title: "Obsidian Pong",
+    origin: "Pong",
+    originYear: 1972,
+    pass: "3.1",
+    status: "LIVE",
+    upgrades: [
+      { label: "Local 2P", description: "Local two-player mode" },
+      { label: "3-Tier AI", description: "Easy, Medium, Punisher difficulty" },
+    ],
+  },
+  {
+    id: "snake",
+    title: "Obsidian Snake",
+    origin: "Snake",
+    originYear: 1976,
+    pass: "3.2",
+    status: "LIVE",
+    upgrades: [
+      { label: "Wraparound", description: "Edges connect, no instant-death walls" },
+      { label: "Combo Chain", description: "Chain pickups for score multipliers" },
+    ],
+  },
+  {
+    id: "break",
+    title: "Obsidian Break",
+    origin: "Breakout",
+    originYear: 1976,
+    pass: "3.3",
+    status: "LIVE",
+    upgrades: [
+      { label: "Paddle Spin", description: "Hold Shift to spin paddle and curve the ball" },
+      { label: "Power Drops", description: "Bricks drop power-ups - expand, multi, slow, laser" },
+    ],
+  },
+  {
+    id: "sweep",
+    title: "Obsidian Sweep",
+    origin: "Minesweeper",
+    originYear: 1989,
+    pass: "3.4",
+    status: "FORGING",
+    upgrades: [
+      { label: "Chord-Click", description: "Reveal adjacent safe cells in one click" },
+      { label: "Daily Seed", description: "Same board for everyone, same day" },
+    ],
+  },
+  {
+    id: "drift",
+    title: "Obsidian Drift",
+    origin: "Asteroids",
+    originYear: 1979,
+    pass: "3.5",
+    status: "FORGING",
+    upgrades: [
+      { label: "Thrust Trail", description: "Particle trail for momentum visualization" },
+      { label: "Hyperspace", description: "Emergency teleport with risk" },
+    ],
+  },
+  {
+    id: "stack",
+    title: "Obsidian Stack",
+    origin: "Tetris",
+    originYear: 1984,
+    pass: "3.6",
+    status: "FORGING",
+    upgrades: [
+      { label: "Hold + Ghost", description: "Modern piece-hold and drop-preview" },
+      { label: "Endless Garbage", description: "Rising rows, survive as long as possible" },
+    ],
+  },
+  {
+    id: "spire",
+    title: "Obsidian Spire",
+    origin: "NYTHIS Original",
+    originYear: 2026,
+    pass: "3.7",
+    status: "FORGING",
+    isOriginal: true,
+    upgrades: [
+      { label: "Rewind 3s", description: "One rewind per level - undo recent moves" },
+      { label: "Crystal Sense", description: "Briefly highlight the safest path forward" },
+    ],
+  },
+] as const

@@ -1,0 +1,78 @@
+﻿.spire { position: relative; width: 100vw; height: 100vh;  overflow: hidden; }
+.spire__canvas-wrap { position: absolute; inset: 0; }
+.spire__canvas-wrap canvas { display: block; }
+
+.spire__brand {
+  position: absolute; bottom: 1.25rem; left: 0; right: 0;
+  text-align: center;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 0.7rem; letter-spacing: 0.3em; color: #6b6878;
+  pointer-events: none;
+}
+
+.spire-hud {
+  position: absolute; inset: 0; pointer-events: none;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color: #e5e7eb;
+}
+.spire-hud__back {
+  position: absolute; top: 1rem; left: 1rem; pointer-events: auto;
+  background: rgba(34, 28, 42, 0.85); border: 1px solid #3a3445; color: #e5e7eb;
+  padding: 0.5rem 1rem; font-family: inherit; font-size: 0.7rem; letter-spacing: 0.25em;
+  cursor: pointer; transition: background 120ms ease, border-color 120ms ease;
+}
+.spire-hud__back:hover { background: rgba(122, 76, 214, 0.3); border-color: #7a4cd6; }
+
+.spire-hud__stats {
+  position: absolute; top: 1rem; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 1.5rem; align-items: center;
+  background: rgba(10, 10, 10, 0.78); border: 1px solid #3a3445;
+  padding: 0.6rem 1.5rem; backdrop-filter: blur(4px);
+}
+.spire-hud__stat { display: flex; flex-direction: column; align-items: center; min-width: 4.25rem; }
+.spire-hud__stat-label { font-size: 0.6rem; letter-spacing: 0.25em; color: #6b6878; }
+.spire-hud__stat-value { font-size: 1.25rem; font-weight: 700; color: #e5e7eb; font-variant-numeric: tabular-nums; }
+.spire-hud__stat-value--accent { color: #b78aff; text-shadow: 0 0 10px rgba(155,92,255,0.5); }
+.spire-hud__stat-value--upg1   { color: #22d3ee; text-shadow: 0 0 8px rgba(34,211,238,0.45); }
+.spire-hud__stat-value--upg2   { color: #22c55e; text-shadow: 0 0 8px rgba(34,197,94,0.45); }
+
+.spire-hud__cursor-readout {
+  position: absolute; bottom: 4rem; left: 50%; transform: translateX(-50%);
+  background: rgba(10, 10, 10, 0.7); border: 1px solid #3a3445;
+  padding: 0.4rem 1rem; font-size: 0.75rem; letter-spacing: 0.2em; color: #a1a1aa;
+}
+.spire-hud__cursor-readout b { color: #b78aff; font-weight: 700; }
+
+.spire-hud__menu {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  pointer-events: auto;
+  background: rgba(10, 10, 10, 0.94); border: 1px solid #3a3445;
+  padding: 2rem 3rem; text-align: center; min-width: 36rem;
+  box-shadow: 0 0 60px rgba(122, 76, 214, 0.18);
+}
+.spire-hud__title { font-size: 1.85rem; letter-spacing: 0.3em; color: #b78aff; margin-bottom: 0.5rem; text-shadow: 0 0 24px rgba(155, 92, 255, 0.55); }
+.spire-hud__title--win  { color: #22c55e; text-shadow: 0 0 24px rgba(34, 197, 94, 0.65); }
+.spire-hud__title--lose { color: #ef4444; text-shadow: 0 0 24px rgba(239, 68, 68, 0.65); }
+.spire-hud__subtitle { font-size: 0.7rem; letter-spacing: 0.3em; color: #b78aff; margin-bottom: 1.5rem; }
+
+.spire-hud__controls { font-size: 0.82rem; line-height: 2; color: #a1a1aa; margin-bottom: 1.75rem; letter-spacing: 0.1em; }
+.spire-hud__controls b { color: #e5e7eb; font-weight: 700; }
+.spire-hud__hint { margin-top: 0.75rem; color: #b78aff; font-size: 0.65rem; letter-spacing: 0.2em; }
+
+.spire-hud__final { margin-bottom: 1.5rem; line-height: 2.1; }
+.spire-hud__final-row { font-size: 0.9rem; letter-spacing: 0.22em; color: #a1a1aa; }
+.spire-hud__final-row b { color: #e5e7eb; font-weight: 700; margin-left: 0.5rem; }
+.spire-hud__final-row--accent { color: #b78aff; } .spire-hud__final-row--accent b { color: #b78aff; text-shadow: 0 0 12px rgba(155,92,255,0.55); }
+.spire-hud__final-row--upg1   { color: #22d3ee; } .spire-hud__final-row--upg1 b   { color: #22d3ee; text-shadow: 0 0 10px rgba(34,211,238,0.5); }
+.spire-hud__final-row--upg2   { color: #22c55e; } .spire-hud__final-row--upg2 b   { color: #22c55e; text-shadow: 0 0 10px rgba(34,197,94,0.5); }
+.spire-hud__final-row--muted  { color: #6b6878; } .spire-hud__final-row--muted b  { color: #6b6878; }
+
+.spire-hud__start {
+  pointer-events: auto;
+  background: linear-gradient(180deg, #7a4cd6, #5a3aa0);
+  border: 1px solid #9b5cff; color: #f5f3ff;
+  padding: 0.8rem 2.2rem; font-family: inherit; font-size: 0.82rem;
+  letter-spacing: 0.28em; font-weight: 700; cursor: pointer;
+  transition: all 140ms ease; text-shadow: 0 0 10px rgba(155, 92, 255, 0.5);
+}
+.spire-hud__start:hover { background: linear-gradient(180deg, #9b5cff, #7a4cd6); box-shadow: 0 0 24px rgba(155, 92, 255, 0.45); }

@@ -1,0 +1,195 @@
+﻿.sweep {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  
+  overflow: hidden;
+}
+
+.sweep__canvas-wrap {
+  position: absolute;
+  inset: 0;
+}
+.sweep__canvas-wrap canvas {
+  display: block;
+}
+
+.sweep__brand {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  color: #6b6878;
+  pointer-events: none;
+}
+
+.sweep-hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color: #e5e7eb;
+}
+
+.sweep-hud__back {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  pointer-events: auto;
+  background: rgba(34, 28, 42, 0.85);
+  border: 1px solid #3a3445;
+  color: #e5e7eb;
+  padding: 0.5rem 1rem;
+  font-family: inherit;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.sweep-hud__back:hover {
+  background: rgba(122, 76, 214, 0.3);
+  border-color: #7a4cd6;
+}
+
+.sweep-hud__stats {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1.75rem;
+  align-items: center;
+  background: rgba(10, 10, 10, 0.78);
+  border: 1px solid #3a3445;
+  padding: 0.6rem 1.5rem;
+  backdrop-filter: blur(4px);
+}
+.sweep-hud__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 3.75rem;
+}
+.sweep-hud__stat-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  color: #6b6878;
+}
+.sweep-hud__stat-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #e5e7eb;
+  font-variant-numeric: tabular-nums;
+}
+.sweep-hud__stat-value--muted { color: #6b6878; }
+.sweep-hud__stat-value--accent { color: #b78aff; text-shadow: 0 0 10px rgba(155,92,255,0.5); }
+
+.sweep-hud__daily-badge {
+  margin-left: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  background: rgba(122, 76, 214, 0.22);
+  border: 1px solid #7a4cd6;
+  color: #b78aff;
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+}
+
+.sweep-hud__menu {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  background: rgba(10, 10, 10, 0.93);
+  border: 1px solid #3a3445;
+  padding: 2rem 3rem;
+  text-align: center;
+  min-width: 30rem;
+  box-shadow: 0 0 60px rgba(122, 76, 214, 0.18);
+}
+
+.sweep-hud__title {
+  font-size: 1.85rem;
+  letter-spacing: 0.3em;
+  color: #b78aff;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 0 24px rgba(155, 92, 255, 0.55);
+}
+.sweep-hud__title--win { color: #b78aff; text-shadow: 0 0 28px rgba(155, 92, 255, 0.85); }
+.sweep-hud__title--lose { color: #ef4444; text-shadow: 0 0 24px rgba(239, 68, 68, 0.65); }
+
+.sweep-hud__controls {
+  font-size: 0.78rem;
+  line-height: 2;
+  color: #a1a1aa;
+  margin-bottom: 1.75rem;
+  letter-spacing: 0.1em;
+}
+.sweep-hud__controls b { color: #e5e7eb; font-weight: 700; }
+.sweep-hud__hint {
+  margin-top: 0.75rem;
+  color: #6b6878;
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+}
+
+.sweep-hud__final {
+  margin-bottom: 1.5rem;
+  line-height: 2.1;
+}
+.sweep-hud__final-row {
+  font-size: 0.9rem;
+  letter-spacing: 0.22em;
+  color: #a1a1aa;
+}
+.sweep-hud__final-row b {
+  color: #e5e7eb;
+  font-weight: 700;
+  margin-left: 0.5rem;
+}
+.sweep-hud__final-row--chord { color: #b78aff; }
+.sweep-hud__final-row--chord b {
+  color: #b78aff;
+  text-shadow: 0 0 12px rgba(155, 92, 255, 0.65);
+}
+.sweep-hud__final-row--daily { color: #b78aff; }
+.sweep-hud__final-row--daily b { color: #b78aff; }
+
+.sweep-hud__row {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+.sweep-hud__start {
+  pointer-events: auto;
+  background: linear-gradient(180deg, #7a4cd6, #5a3aa0);
+  border: 1px solid #9b5cff;
+  color: #f5f3ff;
+  padding: 0.8rem 1.6rem;
+  font-family: inherit;
+  font-size: 0.82rem;
+  letter-spacing: 0.28em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 140ms ease;
+  text-shadow: 0 0 10px rgba(155, 92, 255, 0.5);
+}
+.sweep-hud__start:hover {
+  background: linear-gradient(180deg, #9b5cff, #7a4cd6);
+  box-shadow: 0 0 24px rgba(155, 92, 255, 0.45);
+}
+.sweep-hud__start--alt {
+  background: linear-gradient(180deg, #3a3445, #221c2a);
+  border-color: #6b6878;
+  color: #b78aff;
+  text-shadow: 0 0 8px rgba(183,138,255, 0.4);
+}
+.sweep-hud__start--alt:hover {
+  background: linear-gradient(180deg, #4a4258, #3a3445);
+  border-color: #b78aff;
+  box-shadow: 0 0 20px rgba(183,138,255, 0.35);
+}
