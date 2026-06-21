@@ -1,73 +1,61 @@
-# React + TypeScript + Vite
+﻿# NYTHIS Obsidian Game Play
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**The classics, sharpened.**
 
-Currently, two official plugins are available:
+Seven arcade games rebuilt with React Three Fiber, Zustand, and a cosmic environment that drifts behind every scene.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+[**Play it live →**](https://bigstodg120.github.io/NYTHIS-OBSIDIAN-GAME-PLAY/)
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## What is shipped
 
-## Expanding the ESLint configuration
+| Game | Inspired by | Mechanics |
+|---|---|---|
+| Obsidian Pong | Pong (1972) | Local 2P + 3-tier AI |
+| Obsidian Snake | Snake (1976) | Wraparound + combo chain |
+| Obsidian Break | Breakout (1976) | Paddle spin + power drops |
+| Obsidian Sweep | Minesweeper (1989) | Chord-click + daily seed |
+| Obsidian Drift | Asteroids (1979) | Thrust trail + hyperspace |
+| Obsidian Stack | Tetris (1984) | Hold + ghost + endless garbage |
+| Obsidian Spire | NYTHIS Original (2026) | 3s rewind + crystal sense |
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- React 18.3.1 + TypeScript (strict mode)
+- React Three Fiber 8.17.10 + Three.js 0.160
+- Zustand 4.5.5
+- Tailwind 4
+- Vite 5.4
+- Playwright (20-spec gate, single worker)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Cosmic environment
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Every scene renders behind a single fixed Canvas2D cosmic layer: drifting violet nebulas with three radial anchors, twin counter-rotating galaxy spirals, three depth tiers of parallax stars (770+ on a standard viewport), and diagonal light streaks. Pure 2D for performance. Paused on tab blur to save battery.
+
+## Local development
+
+```bash
+npm install
+npm run dev      # localhost:5173
+npm run build    # strict tsc -b + vite build
+npm run test     # Playwright 20-spec gate
+npm run deploy   # gh-pages -d dist
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Quality gates
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- Strict TypeScript build (`tsc -b` exit 0)
+- Playwright 20-spec gate (workers=1, fullyParallel=false)
+- Bundle cap: 8,000 KB (currently 1,249 KB, 15.6%)
+- Visual gate: cosmic environment confirmed in browser before every ship
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## License
+
+MIT. Free to fork, study, ship. No tracking, no upsell, no premium tier.
+
+## Built by
+
+[BIGSTODG120](https://github.com/BIGSTODG120) — Director of TOA Legacy Consulting, founder of NYTHIS.
+
+Six arcade classics seeded a $300 billion industry. Most builders today couldn't ship one of them clean. This repo shipped seven.
